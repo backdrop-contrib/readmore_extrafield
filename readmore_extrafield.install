@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function readmore_extrafield_uninstall()
+{
+	variable_del('readmore_extrafield_variables');
+}

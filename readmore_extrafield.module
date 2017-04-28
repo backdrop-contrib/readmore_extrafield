@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * @file
+ */
+
+define('READMORE_EXTRAFIELD_DEFAULT_TEXT', 'Read more<span class="element-invisible"> about @title</span>');
+
+/**
+ * Implements hook_menu().
+ */
+function readmore_extrafield_menu()
+{
+    $items['admin/config/readmore_extrafield'] = array(
+        'title' => 'Read More Extra Field',
+        'description' => 'Read More Extra Field',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('readmore_extrafield_admin_form'),
+        'access arguments' => array('administer site configuration'),
+        'file' => 'readmore_extrafield.admin.inc',
+    );
+
+    return $items;
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function readmore_extrafield_field_extra_fields()
+{
+    $extra = array();
+
+    foreach (variable_get('readmore_extrafield_variables', array()) as $key => $settings) {
+        if (strpos($key, '--')) {
+
+            list($type, $bundle) = explode('--', $key);
+
+            if (is_array($settings) && !empty($settings['enable_extra_field'])) {
+                $extra[$type][$bundle] = array();
+            }
+        }
+    }
+
+    foreach ($extra as $type => $list) {
+        foreach (array_keys($list) as $bundle) {
+            $extra[$type][$bundle] = array(
+                'display' => array(
+                    'readmore_extrafield' => array(
+                        'label' => t('Read more link'),
+                        'description' => t('Read more extra field'),
+                        'weight' => 0,
+                    ),
+                ),
+            );
+        }
+    }
+
+    return $extra;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode)
+{
+    if (!empty($entity->type)) {
+
+        $settings = variable_get('readmore_extrafield_variables', array());
+        $settings_key = $type.'--'.$entity->type;
+
+        $extra_fields = field_info_extra_fields($type, $entity->type, 'display');
+
+        $field_name = 'readmore_extrafield';
+        if (isset($extra_fields[$field_name]) && !empty($extra_fields[$field_name]['display'][$view_mode]['visible'])) {
+
+            $text = (isset($settings[$settings_key]['settings']['text'])) ? $settings[$settings_key]['settings']['text'] : READMORE_EXTRAFIELD_DEFAULT_TEXT;
+            $classes = array();
+            if (!empty($settings[$settings_key]['settings']['class'])) {
+                $classes = array_filter(array_filter(explode(' ', $settings[$settings_key]['settings']['class']), 'trim'), 'check_plain');
+            }
+
+            /** @see node_build_content() */
+            $links = array();
+            $entity->content[$field_name] = array(
+                '#theme' => 'links__node',
+                '#pre_render' => array('drupal_pre_render_links'),
+                '#attributes' => array('class' => array('links', 'inline')),
+            );
+
+            $node_title_stripped = strip_tags($entity->title);
+            $links['node-readmore'] = array(
+                'title' => t($text, array('@title' => $node_title_stripped)),
+                'href' => 'node/' . $entity->nid,
+                'html' => TRUE,
+                'attributes' => array('rel' => 'tag', 'title' => $node_title_stripped, 'class' => $classes),
+            );
+
+            $entity->content[$field_name]['node'] = array(
+                '#theme' => 'links__node__node',
+                '#links' => $links,
+                '#attributes' => array('class' => array('links', 'inline')),
+            );
+        }
+
+        if (isset($settings[$settings_key]) && is_array($settings[$settings_key]) && !empty($settings[$settings_key]['hide_default_link'])) {
+            if (isset($entity->content['links']['node'])) {
+                $entity->content['links']['node']['#access'] = false;
+            }
+        }
+    }
+}
