@@ -1,9 +1,13 @@
 <?php
 
 /**
+ * @file
+ * Install, update and uninstall functions for the Read More Extra Field module.
+ */
+
+/**
  * Implements hook_uninstall().
  */
-function readmore_extrafield_uninstall()
-{
-	variable_del('readmore_extrafield_variables');
+function readmore_extrafield_uninstall() {
+  variable_del('readmore_extrafield_variables');
 }
