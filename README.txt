@@ -2,7 +2,28 @@ INTRODUCTION
 ------------
 
 The Read More Extra Field module replaces the default "Read more" link
-displayed when nodes are rendered as teasers by an extra field.
+(displayed when nodes are rendered as teasers) by an extra field.
+
+This module brings the following advantages :
+
+ * Fields appearance order is easily configurable via the display settings.
+   It is thus easy to move the Read more link before or after any other field
+   of your entities.
+
+ * The Read More extra field is not intrusive. It can be enabled on any
+   fieldable entity of your choice, and you can decide to keep the default
+   Read More link.
+
+ * The default Read More link only appear in Teaser mode. It can be annoying
+   when you create custom view modes. The Read More Extra Field is available
+   in all view modes.
+
+ * The Read More Extra Field module comes with some additional usefull
+   settings : It is possible to configure the Read More link text, or add CSS
+   classes.
+
+ * This module can also be used to easily hide the default Read More link when
+   it is not needed.
 
 
 REQUIREMENTS
