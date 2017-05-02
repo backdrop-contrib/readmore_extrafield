@@ -2,8 +2,7 @@
 
 /**
  * @file
- * Read More Extra Field module.
- * Replaces the default Read more link by an extra field.
+ * This module replaces default Read more link by an extra field.
  */
 
 define('READMORE_EXTRAFIELD_DEFAULT_TEXT', 'Read more<span class="element-invisible"> about @title</span>');

@@ -18,7 +18,7 @@ This module brings the following advantages :
    when you create custom view modes. The Read More Extra Field is available
    in all view modes.
 
- * The Read More Extra Field module comes with some additional usefull
+ * The Read More Extra Field module comes with some additional useful
    settings : It is possible to configure the Read More link text, or add CSS
    classes.
 
