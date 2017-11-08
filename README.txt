@@ -43,7 +43,7 @@ INSTALLATION
 CONFIGURATION
 -------------
 
- * Visit admin/config/readmore_extrafield to enable the Read More Extra Field
+ * Visit admin/config/content/readmore_extrafield to enable the Read More Extra Field
    on specific entities. Any fieldable entity can be configured separately.
 
  * Configure the display of your entities to make the Read More link visible

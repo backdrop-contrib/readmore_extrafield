@@ -11,9 +11,9 @@ define('READMORE_EXTRAFIELD_DEFAULT_TEXT', 'Read more<span class="element-invisi
  * Implements hook_menu().
  */
 function readmore_extrafield_menu() {
-  $items['admin/config/readmore_extrafield'] = array(
-    'title' => 'Read More Extra Field',
-    'description' => 'Read More Extra Field',
+  $items['admin/config/content/readmore_extrafield'] = array(
+    'title' => t('Read More settings'),
+    'description' => t('Configure Read More links'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('readmore_extrafield_admin_form'),
     'access arguments' => array('administer site configuration'),

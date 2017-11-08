@@ -2,5 +2,5 @@ name = Read More Extra Field
 description = Render the Read More link as an extra field
 core = 7.x
 package = Fields
-configure = admin/config/readmore_extrafield
+configure = admin/config/content/readmore_extrafield
 dependencies[] = field
