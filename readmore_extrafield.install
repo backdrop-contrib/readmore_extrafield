@@ -10,4 +10,18 @@
  */
 function readmore_extrafield_uninstall() {
   variable_del('readmore_extrafield_variables');
+
+  // Uninstall extra field display settings which are stored in the Field module variables
+  foreach (entity_get_info() as $entity_type => $info) {
+    $full_info = entity_get_info($entity_type);
+    if (isset($full_info['fieldable'], $full_info['bundles']) && $full_info['fieldable']) {
+      foreach (array_keys($full_info['bundles']) as $bundle) {
+        $settings = field_bundle_settings($entity_type, $bundle);
+        if (isset($settings['extra_fields']['display']['readmore_extrafield'])) {
+          unset($settings['extra_fields']['display']['readmore_extrafield']);
+          field_bundle_settings($entity_type, $bundle, $settings);
+        }
+      }
+    }
+  }
 }
