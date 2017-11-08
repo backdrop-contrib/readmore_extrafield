@@ -6,6 +6,30 @@
  */
 
 /**
+ * Rename settings variables
+ */
+function readmore_extrafield_update_7001() {
+
+  $settings_migration = array(
+    'enable_extra_field' => 'rmef_enable',
+    'hide_default_link' => 'rmef_hide',
+    'text' => 'rmef_link_text',
+    'class' => 'rmef_link_class',
+  );
+
+  $settings = variable_get('readmore_extrafield_variables', array());
+  foreach (array_keys($settings) as $key) {
+    foreach ($settings_migration as $old_name => $new_name) {
+      if (isset($settings[$key][$old_name])) {
+        $settings[$key][$new_name] = $settings[$key][$old_name];
+        unset($settings[$key][$old_name]);
+      }
+    }
+  }
+  variable_set('readmore_extrafield_variables', $settings);
+}
+
+/**
  * Implements hook_uninstall().
  */
 function readmore_extrafield_uninstall() {

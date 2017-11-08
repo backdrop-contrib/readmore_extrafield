@@ -41,40 +41,8 @@ function readmore_extrafield_admin_form($form, &$form_state) {
         '#markup' => '<h3>' . t('Entity : @type--@bundle', array('@type' => $type, '@bundle' => $bundle)) . '</h3>',
       );
 
-      $form['readmore_extrafield_variables'][$key]['enable_extra_field'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Enable <em>Read more</em> extra field'),
-        '#default_value' => isset($settings[$key]['enable_extra_field']) ? $settings[$key]['enable_extra_field'] : 0,
-      );
-
-      $form['readmore_extrafield_variables'][$key]['hide_default_link'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Hide default <em>Read more</em> link'),
-        '#default_value' => isset($settings[$key]['hide_default_link']) ? $settings[$key]['hide_default_link'] : 0,
-      );
-
-      $form['readmore_extrafield_variables'][$key]['settings'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Settings'),
-        '#states' => array(
-          'invisible' => array(
-            'input[name="readmore_extrafield_variables[' . $key . '][enable_extra_field]"]' => array('checked' => FALSE),
-          ),
-        ),
-      );
-
-      $form['readmore_extrafield_variables'][$key]['settings']['text'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Link text'),
-        '#default_value' => isset($settings[$key]['settings']['text']) ? $settings[$key]['settings']['text'] : READMORE_EXTRAFIELD_DEFAULT_TEXT,
-      );
-
-      $form['readmore_extrafield_variables'][$key]['settings']['class'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Link CSS class'),
-        '#description' => t('Multiple classes separated by space'),
-        '#default_value' => isset($settings[$key]['settings']['class']) ? $settings[$key]['settings']['class'] : '',
-      );
+      $bundle_form = readmore_extrafield_admin_bundle_settings_form($type, $bundle);
+      $form['readmore_extrafield_variables'][$key] += $bundle_form;
     }
   }
 
@@ -98,7 +66,7 @@ function readmore_extrafield_admin_form_submit($form, &$form_state) {
 
   // Set default display settings for enabled bundles
   foreach ($form_state['values']['readmore_extrafield_variables'] as $key => $settings) {
-    if (strpos($key, '--') && is_array($settings) && !empty($settings['enable_extra_field'])) {
+    if (strpos($key, '--') && is_array($settings) && !empty($settings['rmef_enable'])) {
 
       list($entity_type, $bundle) = explode('--', $key);
 
