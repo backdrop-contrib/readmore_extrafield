@@ -95,4 +95,34 @@ function readmore_extrafield_admin_form_submit($form, &$form_state) {
     cache_clear_all('*', $table, TRUE);
   }
   drupal_set_message(t('Fields cache flushed'), 'status', FALSE);
+
+  // Set default display settings for enabled bundles
+  foreach ($form_state['values']['readmore_extrafield_variables'] as $key => $settings) {
+    if (strpos($key, '--') && is_array($settings) && !empty($settings['enable_extra_field'])) {
+
+      list($entity_type, $bundle) = explode('--', $key);
+
+      // Find all enabled view modes with the bundle
+      $view_modes = array('default');
+      foreach (field_view_mode_settings($entity_type, $bundle) as $view_mode => $view_mode_settings) {
+        if ($view_mode_settings['custom_settings']) {
+          $view_modes[] = $view_mode;
+        }
+      }
+
+      $bundle_settings = field_bundle_settings($entity_type, $bundle);
+      foreach ($view_modes as $view_mode) {
+        // Don't overwrite already existing display settings
+        if (!isset($bundle_settings['extra_fields']['display']['readmore_extrafield'][$view_mode])) {
+          $bundle_settings['extra_fields']['display']['readmore_extrafield'][$view_mode] = array(
+            // By default, the extra field will be set as the last field
+            'weight' => 1 + (int)field_info_max_weight($entity_type, $bundle, $view_mode),
+            // By default, the extra field will be only visible in Teaser view mode
+            'visible' => ($view_mode == 'teaser'),
+          );
+        }
+      }
+      field_bundle_settings($entity_type, $bundle, $bundle_settings);
+    }
+  }
 }
