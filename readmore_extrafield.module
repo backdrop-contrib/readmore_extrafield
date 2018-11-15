@@ -12,8 +12,8 @@ define('READMORE_EXTRAFIELD_DEFAULT_TEXT', 'Read more<span class="element-invisi
  */
 function readmore_extrafield_menu() {
   $items['admin/config/content/readmore_extrafield'] = array(
-    'title' => t('Read More settings'),
-    'description' => t('Configure Read More links'),
+    'title' => 'Read More settings',
+    'description' => 'Configure Read More links',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('readmore_extrafield_admin_form'),
     'access arguments' => array('administer site configuration'),
@@ -218,5 +218,11 @@ function readmore_extrafield_save_settings(&$form, $form_state) {
     }
 
     variable_set('readmore_extrafield_variables', $settings);
+  }
+
+  // Flush the field module cache.
+  $cache_tables = module_invoke('field', 'flush_caches');
+  foreach ($cache_tables as $table) {
+    cache_clear_all('*', $table, TRUE);
   }
 }
