@@ -71,10 +71,10 @@ function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode) 
     $field_name = 'readmore_extrafield';
     if (isset($extra_fields[$field_name]) && !empty($extra_fields[$field_name]['display'][$view_mode]['visible'])) {
 
-      $text = (isset($settings[$settings_key]['settings']['rmef_text'])) ? $settings[$settings_key]['settings']['rmef_text'] : READMORE_EXTRAFIELD_DEFAULT_TEXT;
+      $text = (isset($settings[$settings_key]['settings']['rmef_link_text'])) ? $settings[$settings_key]['settings']['rmef_link_text'] : READMORE_EXTRAFIELD_DEFAULT_TEXT;
       $classes = array();
-      if (!empty($settings[$settings_key]['settings']['rmef_class'])) {
-        $classes = array_filter(array_filter(explode(' ', $settings[$settings_key]['settings']['rmef_class']), 'trim'), 'check_plain');
+      if (!empty($settings[$settings_key]['settings']['rmef_link_class'])) {
+        $classes = array_filter(array_filter(explode(' ', $settings[$settings_key]['settings']['rmef_link_class']), 'trim'), 'check_plain');
       }
 
       // @see node_build_content()
