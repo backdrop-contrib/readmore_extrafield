@@ -61,7 +61,7 @@ function readmore_extrafield_field_extra_fields() {
  * Implements hook_entity_view().
  */
 function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode) {
-  if (!empty($entity->type)) {
+  if (!empty($entity->type) && $view_mode !== 'full') {
 
     $settings = variable_get('readmore_extrafield_variables', array());
     $settings_key = $type . '--' . $entity->type;
