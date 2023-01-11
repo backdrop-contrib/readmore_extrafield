@@ -5,35 +5,14 @@
  * Install, update and uninstall functions for the Read More Extra Field module.
  */
 
-/**
- * Rename settings variables
- */
-function readmore_extrafield_update_7001() {
-
-  $settings_migration = array(
-    'enable_extra_field' => 'rmef_enable',
-    'hide_default_link' => 'rmef_hide',
-    'text' => 'rmef_link_text',
-    'class' => 'rmef_link_class',
-  );
-
-  $settings = variable_get('readmore_extrafield_variables', array());
-  foreach (array_keys($settings) as $key) {
-    foreach ($settings_migration as $old_name => $new_name) {
-      if (isset($settings[$key][$old_name])) {
-        $settings[$key][$new_name] = $settings[$key][$old_name];
-        unset($settings[$key][$old_name]);
-      }
-    }
-  }
-  variable_set('readmore_extrafield_variables', $settings);
-}
+// TODO The old hook_update_N functions cannot be applied to Backdrop.
+function readmore_extrafield_update_7001() { }
 
 /**
- * Implements hook_uninstall().
+ * Implements hook_uninstall().().
  */
 function readmore_extrafield_uninstall() {
-  variable_del('readmore_extrafield_variables');
+  config_clear('readmore_extrafield.settings', 'readmore_extrafield_variables');
 
   // Uninstall extra field display settings which are stored in the Field module variables
   foreach (entity_get_info() as $entity_type => $info) {
@@ -48,4 +27,29 @@ function readmore_extrafield_uninstall() {
       }
     }
   }
+}
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function readmore_extrafield_update_last_removed() {
+  return 7001;
+}
+
+/**
+ * Migrate readmore_extrafield variables to config.
+ */
+function readmore_extrafield_update_1000() {
+  $config = config('readmore_extrafield.settings');
+  $config->set('readmore_extrafield_variables', update_variable_get('readmore_extrafield_variables', array()));
+  $config->save();
+
+  update_variable_del('readmore_extrafield_variables');
+}
+
+/**
+ * Implements hook_install().
+ */
+function readmore_extrafield_install() {
+  // Dynamically generated variable data was detected.
 }

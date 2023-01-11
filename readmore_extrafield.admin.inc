@@ -12,7 +12,7 @@
  * @see system_settings_form()
  */
 function readmore_extrafield_admin_form($form, &$form_state) {
-  $settings = variable_get('readmore_extrafield_variables', array());
+  $settings = config_get('readmore_extrafield.settings', 'readmore_extrafield_variables');
 
   $entities = array();
   foreach (entity_get_info() as $type => $info) {
@@ -22,6 +22,7 @@ function readmore_extrafield_admin_form($form, &$form_state) {
     }
   }
 
+  $form['#config'] = 'readmore_extrafield.settings';
   $form['readmore_extrafield_variables'] = array(
     '#type' => 'vertical_tabs',
     '#tree' => TRUE,
@@ -62,7 +63,7 @@ function readmore_extrafield_admin_form_submit($form, &$form_state) {
   foreach ($cache_tables as $table) {
     cache_clear_all('*', $table, TRUE);
   }
-  drupal_set_message(t('Fields cache flushed'), 'status', FALSE);
+  backdrop_set_message(t('Fields cache flushed'), 'status', FALSE);
 
   // Set default display settings for enabled bundles
   foreach ($form_state['values']['readmore_extrafield_variables'] as $key => $settings) {
@@ -84,7 +85,7 @@ function readmore_extrafield_admin_form_submit($form, &$form_state) {
         if (!isset($bundle_settings['extra_fields']['display']['readmore_extrafield'][$view_mode])) {
           $bundle_settings['extra_fields']['display']['readmore_extrafield'][$view_mode] = array(
             // By default, the extra field will be set as the last field
-            'weight' => 1 + (int)field_info_max_weight($entity_type, $bundle, $view_mode),
+            'weight' => 1 + (int) field_info_max_weight($entity_type, $bundle, $view_mode),
             // By default, the extra field will be only visible in Teaser view mode
             'visible' => ($view_mode == 'teaser'),
           );

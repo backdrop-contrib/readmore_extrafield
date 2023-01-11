@@ -8,13 +8,13 @@
 define('READMORE_EXTRAFIELD_DEFAULT_TEXT', 'Read more<span class="element-invisible"> about @title</span>');
 
 /**
- * Implements hook_menu().
+ * Implements hook_menu().().
  */
 function readmore_extrafield_menu() {
   $items['admin/config/content/readmore_extrafield'] = array(
     'title' => 'Read More settings',
     'description' => 'Configure Read More links',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('readmore_extrafield_admin_form'),
     'access arguments' => array('administer site configuration'),
     'file' => 'readmore_extrafield.admin.inc',
@@ -24,12 +24,23 @@ function readmore_extrafield_menu() {
 }
 
 /**
- * Implements hook_field_extra_fields().
+ * Implements hook_config_info().
+ */
+function readmore_extrafield_config_info() {
+  $prefixes['readmore_extrafield.settings'] = array(
+    'label' => t('Read More Extra Field settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
+ * Implements hook_field_extra_fields().().
  */
 function readmore_extrafield_field_extra_fields() {
   $extra = array();
 
-  foreach (variable_get('readmore_extrafield_variables', array()) as $bundle_key => $settings) {
+  foreach (config_get('readmore_extrafield.settings', 'readmore_extrafield_variables') as $bundle_key => $settings) {
     if (strpos($bundle_key, '--')) {
 
       list($type, $bundle) = explode('--', $bundle_key);
@@ -58,12 +69,12 @@ function readmore_extrafield_field_extra_fields() {
 }
 
 /**
- * Implements hook_entity_view().
+ * Implements hook_entity_view().().
  */
 function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode) {
   if (!empty($entity->type) && $view_mode !== 'full') {
 
-    $settings = variable_get('readmore_extrafield_variables', array());
+    $settings = config_get('readmore_extrafield.settings', 'readmore_extrafield_variables');
     $settings_key = $type . '--' . $entity->type;
 
     $extra_fields = field_info_extra_fields($type, $entity->type, 'display');
@@ -81,7 +92,7 @@ function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode) 
       $links = array();
       $entity->content[$field_name] = array(
         '#theme' => 'links__node',
-        '#pre_render' => array('drupal_pre_render_links'),
+        '#pre_render' => array('backdrop_pre_render_links'),
         '#attributes' => array('class' => array('links', 'inline')),
       );
 
@@ -124,7 +135,7 @@ function readmore_extrafield_entity_view($entity, $type, $view_mode, $langcode) 
 function readmore_extrafield_admin_bundle_settings_form($entity_type, $bundle) {
   $form = array();
 
-  $settings = variable_get('readmore_extrafield_variables', array());
+  $settings = config_get('readmore_extrafield.settings', 'readmore_extrafield_variables');
   $key = $entity_type . '--' . $bundle;
 
   $form['rmef_enable'] = array(
@@ -175,7 +186,7 @@ function readmore_extrafield_admin_bundle_settings_form($entity_type, $bundle) {
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_form_BASE_FORM_ID_alter().().
  */
 function readmore_extrafield_form_node_type_form_alter(&$form, $form_state) {
   // Add the Read More settings tab, and extra javascript needed for the fieldset summary.
@@ -187,7 +198,7 @@ function readmore_extrafield_form_node_type_form_alter(&$form, $form_state) {
     '#group' => 'additional_settings',
     '#attached' => array(
       'js' => array(
-        drupal_get_path('module', 'readmore_extrafield') . '/readmore_extrafield.js',
+        backdrop_get_path('module', 'readmore_extrafield') . '/readmore_extrafield.js',
       ),
     ),
   );
@@ -208,7 +219,7 @@ function readmore_extrafield_save_settings(&$form, $form_state) {
 
     $bundle_key = 'node--' . $form['#node_type']->type;
 
-    $settings = variable_get('readmore_extrafield_variables', array());
+    $settings = config_get('readmore_extrafield.settings', 'readmore_extrafield_variables');
 
     foreach (array('rmef_enable', 'rmef_hide', 'rmef_link_text', 'rmef_link_class') as $name) {
       if (isset($form_state['values'][$name])) {
@@ -217,7 +228,7 @@ function readmore_extrafield_save_settings(&$form, $form_state) {
       }
     }
 
-    variable_set('readmore_extrafield_variables', $settings);
+    config_set('readmore_extrafield.settings', 'readmore_extrafield_variables', $settings);
   }
 
   // Flush the field module cache.
